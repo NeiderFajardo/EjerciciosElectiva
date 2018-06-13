@@ -1,0 +1,82 @@
+# MPI exercises
+# PSL Distributed and Parallel processing course - UD 2018 
+# We are hiring www.psl.com.co/go 
+
+###################################################################
+#
+#                             Exercise 1 
+#
+###################################################################
+#
+##################    Step 1   ####################################
+#
+###################################################################
+
+Please be sure that you have a  installed openmpi and mpi compiler with openmp support
+
+$>mpicc --version
+gcc (Ubuntu 4.9.3-13ubuntu2) 4.9.3
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$>mpirun --version 
+
+gcc (Ubuntu 4.9.3-13ubuntu2) 4.9.3
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+##################    Step 1   ####################################
+
+Compile the Hellow world examples with mpi
+
+$>mpicc mpi_hello.c -o mpi_hello
+
+
+Run the example with 2, 4 and 8 process
+
+$>mpirun -np 2 ./mpi_hello
+Hello from task 0 on linuxdev-server!
+MASTER: Number of MPI tasks is: 2
+Hello from task 1 on linuxdev-server!
+
+$>mpirun -np 4 ./mpi_hello
+
+Hello from task 2 on linuxdev-server!
+Hello from task 3 on linuxdev-server!
+Hello from task 0 on linuxdev-server!
+MASTER: Number of MPI tasks is: 4
+Hello from task 1 on linuxdev-server!
+
+Run your program a few more times, but vary the number of nodes and total tasks. Observe the task output statements to confirm.
+
+###################################################################
+#
+#                             Exercise 2
+#
+###################################################################
+
+##################    Step 1   ####################################
+
+Assuming you were able to create a successful "hello world" MPI program in Exercise 1, copy your source file to a new file and call it something like helloBsend.c . If you were not successful, you can use the provided mpi_hello.c as your starting point.
+
+Edit your new helloBsend source file and modify it to do the following - after the master task has printed the number of tasks, but before MPI_Finalize:
+Have each task determine a unique partner task to send/receive with. One easy way to do this:
+
+	if (taskid < numtasks/2) then partner = numtasks/2 + taskid
+	else if (taskid >= numtasks/2) then partner = taskid - numtasks/2
+
+Each task sends its partner a single integer message: its taskid
+Each task receives from its partner a single integer message: the partner's taskid
+For confirmation, after the send/receive, each task prints something like "Task ## is partner with ##" where ## is the taskid of the task and its partner.
+
+If you need help, see the provided example files  
+
+compile your helloBsend program until you get a clean compile.
+
+*) run it with  8 process 
+
+
+

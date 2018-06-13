@@ -1,0 +1,199 @@
+# OpenMP exercises
+# PSL Distributed and Parallel processing course - UD 2018 
+# We are hiring www.psl.com.co/go 
+
+###################################################################
+#
+#                             Exercise 1 
+#
+###################################################################
+#
+##################    Step 1   ####################################
+#
+###################################################################
+Please be sure that you have a  installed gcc with openmp support
+
+$> gcc --version 
+$> gcc -fopenmp --version 
+gcc (Ubuntu 4.9.3-13ubuntu2) 4.9.3
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+if you see an error like 
+gcc: error: unrecognized command line option ‘-fopenmp’
+you need install correctly the gcc and libs 
+
+$> sudo apt-get install gcc gcc-devel g++
+
+
+###################################################################
+##################    Step 2   ####################################
+###################################################################
+
+please get the number of processor and cores on your machine 
+
+# For cores 
+$> cat /proc/cpuinfo | grep processors 
+
+processor	: 0
+processor	: 1
+processor	: 2
+processor	: 3
+processor	: 4
+processor	: 5
+processor	: 6
+processor	: 7
+
+# For processors
+
+cat /proc/cpuinfo | grep "cpu cores" | uniq
+
+cpu cores	: 4
+
+
+Use top for view some aspect of performance on your machine 
+
+$> top 
+ choose f and select P (last Used CPU) (the options is choose with space bar and ESC
+
+With this options you can see the current core running the command
+
+use 1 for change the view to specific per processor performance
+
+$>top 
+top - 05:57:25 up 10:56,  1 user,  load average: 0,39, 0,38, 0,50
+Tasks: 323 total,   1 running, 322 sleeping,   0 stopped,   0 zombie
+%Cpu0  :  3,3 us,  1,3 sy,  0,0 ni, 95,3 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+%Cpu1  :  3,7 us,  1,7 sy,  0,0 ni, 94,4 id,  0,3 wa,  0,0 hi,  0,0 si,  0,0 st
+%Cpu2  :  2,0 us,  3,3 sy,  0,0 ni, 94,6 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+%Cpu3  :  2,4 us,  1,7 sy,  0,0 ni, 95,9 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+%Cpu4  :  1,0 us,  0,3 sy,  0,0 ni, 98,3 id,  0,3 wa,  0,0 hi,  0,0 si,  0,0 st
+%Cpu5  :  0,7 us,  3,0 sy,  0,0 ni, 96,3 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+%Cpu6  :  1,3 us,  0,3 sy,  0,0 ni, 98,3 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+%Cpu7  :  0,7 us,  0,3 sy,  0,0 ni, 99,0 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+KiB Mem : 16321312 total,  3742956 free,  6636940 used,  5941416 buff/cache
+KiB Swap: 31250428 total, 31250428 free,        0 used.  9009464 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                              P 
+ 5612 eshernan  20   0 5025000 2,579g 2,533g S  13,3 16,6  92:08.83 VirtualBox                           5 
+ 1330 root      20   0  735648 169340 104140 S   3,7  1,0  20:36.28 Xorg                                 4 
+
+###################################################################
+##################    Step 3   ####################################
+###################################################################
+
+compile the source code with support por OpenMP and Serial
+NOTE:Copy locally the examples, if you try to running it on USB should experiment some problems ) 
+
+
+$> gcc -fopenmp omp_hello.c -o omp_hello
+
+run the executable
+
+$>./omp_hello 
+
+Hello World from thread = 3
+Hello World from thread = 7
+Hello World from thread = 2
+Hello World from thread = 5
+Hello World from thread = 0
+Number of threads = 8
+Hello World from thread = 6
+Hello World from thread = 4
+Hello World from thread = 1
+
+
+###################################################################
+##################    Step 4   ####################################
+###################################################################
+
+Is time to manipule the ENV variables. 
+
+$> echo $OMP_NUM_THREADS 
+
+
+$> export OMP_NUM_THREADS=2
+$>./omp_hello 
+
+What happen ? 
+
+Run your program several times and observe the order of print statements. 
+Notice that the order of output is more or less random.
+
+
+###################################################################
+#
+#                       Exercise 2 
+#
+###################################################################
+##################    Step 1   ####################################
+
+This example demonstrates use of the OpenMP loop work-sharing construct. Notice that it specifies dynamic scheduling of threads and assigns a specific number of iterations to be done by each thread.
+
+First, set the number of threads to 4:
+$> export OMP_NUM_THREADS=4
+
+Compile the file omp_workshared1.c 
+
+
+$> gcc -fopenmp omp_workshare1.c -o omp_workshare1
+
+*) Review the output. Note that it is piped through the sort utility. This will make it easier to view how loop iterations were actually scheduled across the team of threads.
+
+*) Run the program a couple more times and review the output. What do you see? Typically, dynamic scheduling is not deterministic. Everytime you run the program, different threads can run different chunks of work. It is even possible that a thread might not do any work because another thread is quicker and takes more work. In fact, it might be possible for one thread to do all of the work.
+
+*) Edit the workshare1 source file and change the dynamic scheduling to static scheduling.
+
+*) Recompile and run the modified program. Notice the difference in output compared to dynamic scheduling. Specifically, notice that thread 0 gets the first chunk, thread 1 the second chunk, and so on.
+
+*) Run the program a couple more times. Does the output change? With static scheduling, the allocation of work is deterministic and should not change between runs, and every thread gets work to do.
+
+*) Reflect on possible performance differences between dynamic and static scheduling.
+
+
+#####################    Step 2   ####################################
+
+This example performs a matrix multiple by distributing the iterations of the operation between available threads.
+
+Compile the file omp_mm.c 
+
+
+$> gcc -fopenmp omp_mm.c -o omp_mm
+
+Review the output. It shows which thread did each iteration and the final result matrix.
+Run the program again, however this time sort the output to clearly see which threads execute which iterations:
+
+$> matmult | sort | grep Thread
+
+Do the loop iterations match the SCHEDULE(STATIC,CHUNK) directive for the matrix multiple loop in the code?
+
+
+
+#####################    Step 3   ####################################
+
+This example demonstrates use of the OpenMP SECTIONS work-sharing construct Note how the PARALLEL region is divided into separate sections, each of which will be executed by one thread.
+
+Compile the file omp_workshared1.c 
+
+
+$> gcc -fopenmp omp_workshare2.c -o omp_workshare2
+
+Run the program several times and observe any differences in output. Because there are only two sections, you should notice that some threads do not do any work. You may/may not notice that the threads doing work can vary. For example, the first time thread 0 and thread 1 may do the work, and the next time it may be thread 0 and thread 3. It is even possible for one thread to do all of the work. Which thread does work is non-deterministic in this case.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
